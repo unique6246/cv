@@ -46,7 +46,6 @@ while True:
 
     # Create a black image
     image.fill(0)
-
     # Draw cube faces
     for i, face in enumerate([(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4),
                               (2, 3, 7, 6), (1, 2, 6, 5), (0, 3, 7, 4)]):
@@ -57,15 +56,12 @@ while True:
     for edge in edges:
         pt1, pt2 = projected_vertices[edge[0]], projected_vertices[edge[1]]
         cv2.line(image, tuple(pt1), tuple(pt2), (255, 255, 255), cube_thickness)
-
     # Display the frame
     cv2.imshow("Rotating 3D Cube", image)
-
     # Wait for a moment and update the angles
     key = cv2.waitKey(10)
     if key == ord('q'):
         break
-
     angle_x += 0.03
     angle_y += 0.03
     angle_z += 0.03
