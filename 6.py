@@ -1,23 +1,24 @@
 import cv2
+import matplotlib.pyplot as plt
 
-# Read the input image
-input_image = cv2.imread("indvk.jpg")
+# Read the image
+image_path = '5.jpg'
+original_image = cv2.imread(image_path)
 
-# Check if the image is loaded successfully
-if input_image is None:
-    print("Error: Could not load the image.")
-else:
-    # Convert the image from BGR (default color space in OpenCV) to grayscale
-    gray_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
+# Convert from BGR to RGB (OpenCV uses BGR by default)
+rgb_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
 
-    # Convert the image from BGR to RGB
-    rgb_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+# Display the original and converted images using matplotlib
+plt.figure(figsize=(10, 5))
 
-    # Display the original and converted images
-    cv2.imshow("Original Image", input_image)
-    cv2.imshow("Grayscale Image", gray_image)
-    cv2.imshow("RGB Image", rgb_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    
-    
+plt.subplot(1, 2, 2)
+plt.imshow(original_image)
+plt.title('Converted Image (BGR)')
+plt.axis('off')
+
+plt.subplot(1, 2, 1)
+plt.imshow(rgb_image)
+plt.title('Original Image (RGB)')
+plt.axis('off')
+
+plt.show()
