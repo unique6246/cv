@@ -1,70 +1,58 @@
-import cv2
-import numpy as np
-import math
+import pygame
+from pygame.locals import *
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
-# Create a black image
-image_size = 500
-image = np.zeros((image_size, image_size, 3), dtype=np.uint8)
-
-# Define cube parameters
-cube_size = 100
-cube_thickness = 2
-
-# Define cube vertices in 3D space
-vertices = np.array([[-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
-                     [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]], dtype=np.float32)
-
-# Define cube edges
-edges = [(0, 1), (1, 2), (2, 3), (3, 0), (4, 5), (5, 6), (6, 7), (7, 4),
-         (0, 4), (1, 5), (2, 6), (3, 7)]
-
-# Define colors for each face
-colors = [(0, 0, 255), (3, 0, 255), (0, 0, 90),
-          (10, 200, 0), (5, 245, 25), (255, 0, 0)]
-
-# Rotation angles
-angle_x = angle_y = angle_z = 0
-
-while True:
-    # Compute rotation matrices for each axis
-    rotation_matrix_x = np.array([[1, 0, 0], [0, math.cos(angle_x), -math.sin(angle_x)],
-                                   [0, math.sin(angle_x), math.cos(angle_x)]], dtype=np.float32)
-
-    rotation_matrix_y = np.array([[math.cos(angle_y), 0, math.sin(angle_y)],
-                                   [0, 1, 0],
-                                   [-math.sin(angle_y), 0, math.cos(angle_y)]], dtype=np.float32)
-
-    rotation_matrix_z = np.array([[math.cos(angle_z), -math.sin(angle_z), 0],
-                                   [math.sin(angle_z), math.cos(angle_z), 0],
-                                   [0, 0, 1]], dtype=np.float32)
-
-    # Rotate the cube vertices in 3D space
-    rotated_vertices = vertices.dot(rotation_matrix_x).dot(rotation_matrix_y).dot(rotation_matrix_z)
-
-    # Project the 3D points to 2D
-    projected_vertices = ((rotated_vertices[:, :2] * cube_size) + (image_size // 2)).astype(int)
-
-    # Create a black image
-    image.fill(0)
-    # Draw cube faces
-    for i, face in enumerate([(0, 1, 2, 3), (4, 5, 6, 7), (0, 1, 5, 4),
-                              (2, 3, 7, 6), (1, 2, 6, 5), (0, 3, 7, 4)]):
-        pts = projected_vertices[face, :]
-        cv2.fillPoly(image, [pts], color=colors[i])
-
-    # Draw cube edges
-    for edge in edges:
-        pt1, pt2 = projected_vertices[edge[0]], projected_vertices[edge[1]]
-        cv2.line(image, tuple(pt1), tuple(pt2), (255, 255, 255), cube_thickness)
-    # Display the frame
-    cv2.imshow("Rotating 3D Cube", image)
-    # Wait for a moment and update the angles
-    key = cv2.waitKey(10)
-    if key == ord('q'):
-        break
-    angle_x += 0.03
-    angle_y += 0.03
-    angle_z += 0.03
-
-# Release the window
-cv2.destroyAllWindows()
+vertices = [
+    [-1.0,-1.0,-1.0],
+    [1.0,-1.0,-1.0],
+    [1.0,1.0,-1.0],
+    [-1.0,1.0,-1.0],
+    [-1.0,-1.0,1.0],
+    [1.0,-1.0,1.0],
+    [1.0,1.0,1.0],
+    [-1.0,1.0,1.0]
+]
+faces = (
+    (0, 1, 2, 3),
+    (3, 2, 6, 7),
+    (7, 6, 5, 4),
+    (4, 5, 1, 0),
+    (1, 5, 6, 2),
+    (4, 0, 3, 7)
+)
+colors = (
+    (1, 0, 0),
+    (0, 1, 0),
+    (0, 0, 1),
+    (1, 1, 0),
+    (1, 0, 1),
+    (0, 1, 1),
+    (0, 0, 0),
+    (1, 1, 1)
+)
+def draw_cube():
+    glBegin(GL_QUADS)
+    for face in faces:
+        for vertex in face:
+            glColor3fv(colors[vertex])
+            glVertex3fv(vertices[vertex])
+    glEnd()
+def main():
+    pygame.init()
+    display = (800, 600)
+    pygame.display.set_mode(display, DOUBLEBUF | OPENGL)    
+    gluPerspective(45, (display[0] / display[1]), 0.1, 50.0)
+    glTranslatef(0.0, 0.0, -5)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        glRotatef(1, 3, 1, 1)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        draw_cube()
+        pygame.display.flip()
+        pygame.time.wait(10)
+if __name__ == "__main__":
+    main()
