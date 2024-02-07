@@ -1,13 +1,18 @@
-import cv2 as cv
+import cv2
+import numpy as np
 
-img = cv.imread('indvk.jpg')
-cv.imshow('Original image',img)
+# Read an image from file
+image = cv2.imread('1.JPG')
 
-def resize(img,scale=0.5):
-    width=int(img.shape[1]*scale)
-    height=int(img.shape[0]*scale)
-    dimen = (width,height)
-    return cv.resize(img,dimen,interpolation=cv.INTER_AREA)
-im2=resize(img)
-cv.imshow('Resized image',im2)
-cv.waitKey(0)
+# Specify the new dimensions (width, height)
+new_width = 300
+new_height = 200
+
+# Resize the image using cv2.resize
+resized_image = cv2.resize(image, (new_width, new_height))
+
+# Display the original and resized images
+cv2.imshow('Original Image', image)
+cv2.imshow('Resized Image', resized_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
